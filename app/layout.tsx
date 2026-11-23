@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Restaurant POS & Kitchen',
@@ -13,9 +14,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://tailwindcss.com"></script>
-      </head>
       <body className="bg-gray-100 text-gray-900">
         <nav className="bg-gray-900 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-10">
           <span className="font-bold text-amber-400">Restaurant System</span>
