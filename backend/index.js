@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'https://workers.dev',
+  origin: process.env.FRONTEND_ORIGIN || 'https://restaurant.manblue7711.workers.dev',
 }));
 app.use(express.json());
 
@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'auntie-restaurant-api' });
 });
 
-// 1. Staff PIN Login
+// 1. Staff PIN Login (shows exact DB error if something is wrong)
 app.post('/api/staff/login', async (req, res) => {
   const { pin_code } = req.body;
   if (!pin_code) return res.status(400).json({ error: 'PIN is required' });
@@ -27,11 +27,14 @@ app.post('/api/staff/login', async (req, res) => {
   const { data, error } = await supabase
     .from('users')
     .select('id, full_name, role')
-    .eq('pin_code', pin_code.trim())
-    .single();
+    .eq('pin_code', String(pin_code).trim())
+    .maybeSingle();
 
-  if (error || !data) {
-    return res.status(401).json({ error: 'Invalid PIN code' });
+  if (error) {
+    return res.status(500).json({ error: 'DB Error: ' + error.message });
+  }
+  if (!data) {
+    return res.status(401).json({ error: 'No user found with PIN: ' + pin_code });
   }
   res.json({ user: data });
 });
